@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: eu-west-1
   ECR_REGISTRY: 630943284793.dkr.ecr.eu-west-1.amazonaws.com
-  ECR_REPOSITORY: demo-registry
+  ECR_REPOSITORY: counter-server
   IMAGE_NAME: python-server
 
 jobs:
