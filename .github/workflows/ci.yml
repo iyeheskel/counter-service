@@ -13,6 +13,8 @@ env:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
+    # Avoid running if commit is from GitHub Actions bot
+    if: github.actor != 'github-actions[bot]'
 
     steps:
     - name: Checkout repo
@@ -46,17 +48,12 @@ jobs:
       run: |
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.tag.outputs.tag }}
 
-    # Only update deployment.yaml for main branch
+    # Update deployment image when pushing to master
     - name: Update Kubernetes manifest with new image tag
       if: github.ref == 'refs/heads/main'
       run: |
-        sed -i "s|\(image: $ECR_REGISTRY/$ECR_REPOSITORY:\).*|\1${{ steps.tag.outputs.tag }}|" deployment.yaml
-
-    - name: Commit and push manifest changes
-      if: github.ref == 'refs/heads/main'
-      run: |
+        sed -i "s|image: $ECR_REGISTRY/$ECR_REPOSITORY:.*|image: $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.tag.outputs.tag }}|" k8s/counter-server/deployment.yaml
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add deployment.yaml
-        git commit -m "Update image tag to ${{ steps.tag.outputs.tag }}"
-        git push origin main
+        git commit -am "[skip ci] Update image tag to ${{ steps.tag.outputs.tag }}"
+        git push
