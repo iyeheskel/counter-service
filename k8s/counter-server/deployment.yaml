@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: counter-server
-          image: 630943284793.dkr.ecr.eu-west-1.amazonaws.com/counter-server:prod-721ce0b
+          image: 630943284793.dkr.ecr.eu-west-1.amazonaws.com/counter-server:prod-a9d5e90
           ports:
             - containerPort: 80
           resources:
