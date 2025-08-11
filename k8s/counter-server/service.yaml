@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: python-server
+  name: counter-server
 spec:
   type: LoadBalancer
   selector:
-    app: python-server
+    app: counter-server
   ports:
   - port: 80
     targetPort: 80
