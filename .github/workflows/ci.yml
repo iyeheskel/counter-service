@@ -33,7 +33,7 @@ jobs:
       id: tag
       run: |
         if [ "${GITHUB_REF##*/}" = "main" ]; then
-          echo "tag=latest" >> $GITHUB_OUTPUT
+          echo "tag=prod-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
         else
           echo "tag=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
         fi
@@ -45,3 +45,18 @@ jobs:
     - name: Push Docker image to ECR
       run: |
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.tag.outputs.tag }}
+
+    # Only update deployment.yaml for main branch
+    - name: Update Kubernetes manifest with new image tag
+      if: github.ref == 'refs/heads/main'
+      run: |
+        sed -i "s|\(image: $ECR_REGISTRY/$ECR_REPOSITORY:\).*|\1${{ steps.tag.outputs.tag }}|" deployment.yaml
+
+    - name: Commit and push manifest changes
+      if: github.ref == 'refs/heads/main'
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add deployment.yaml
+        git commit -m "Update image tag to ${{ steps.tag.outputs.tag }}"
+        git push origin main
