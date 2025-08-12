@@ -3,13 +3,12 @@ import redis
 
 app = Flask(__name__)
 
-# Connect to Redis service by DNS name (redis) and default port 6379
 r = redis.Redis(host='redis', port=6379, db=0)
 
 @app.route('/', methods=["POST", "GET"])
 def index():
     if request.method == "POST":
-        r.incr('counter')  # Increment counter in Redis
+        r.incr('counter')
         return "Hmm, Plus 1 please test1"
     else:
         count = r.get('counter')
