@@ -50,7 +50,7 @@ jobs:
       run: |
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.tag.outputs.tag }}
 
-    # Update deployment image when pushing to master
+    # Update image tag in deployment.yaml when pushing to main
     - name: Update Kubernetes manifest with new image tag
       if: github.ref == 'refs/heads/main'
       run: |
