@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - '**'
+    paths: # Run CI only if relevant files were updated
+      - counter-service.py
+      - Dockerfile
+      - requirements.txt
 
 env:
   AWS_REGION: eu-west-1
@@ -13,9 +17,7 @@ env:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
-    # Avoid running if commit is from GitHub Actions bot
-    if: github.actor != 'github-actions[bot]'
-
+    
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
