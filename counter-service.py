@@ -1,15 +1,23 @@
-#!flask/bin/python
-from flask import Flask, request, request_started
+from flask import Flask, request
+import redis
 
 app = Flask(__name__)
-counter = 0
+
+# Connect to Redis service by DNS name (redis) and default port 6379
+r = redis.Redis(host='redis', port=6379, db=0)
+
 @app.route('/', methods=["POST", "GET"])
 def index():
-    global counter
     if request.method == "POST":
-        counter+=1
-        return "Hmm, Plus 1 please "
+        r.incr('counter')  # Increment counter in Redis
+        return "Hmm, Plus 1 please test1"
     else:
-        return str(f"Our counter is: {counter} ")
+        count = r.get('counter')
+        if count is None:
+            count = 0
+        else:
+            count = int(count)
+        return f"Our counter is: {count} test1"
+
 if __name__ == '__main__':
-    app.run(debug=True,port=80,host='0.0.0.0')
+    app.run(debug=True, port=80, host='0.0.0.0')
